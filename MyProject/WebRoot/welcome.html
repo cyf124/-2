@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+  <head>
+    <title>主页面</title>
+    <!-- Bootstrap -->
+    <link href="./css/bootstrap.css" rel="stylesheet" >
+    <meta name="viewport" content="width=device-width">
+    <!-- <script src="http://code.jquery.com/jquery.js"></script> -->
+     <script src="./js/jquery.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+  </head>
+  <body background="./img/dust.png">
+    
+
+
+
+
+<div class="banner" >
+			<ul>
+				<li style="background-image: url('./img/demo.jpg');">
+					<div class="inner">
+						
+					</div>
+				</li>
+
+				<li style="background-image: url('./img/demo2.jpg');">
+					<div class="inner">
+						
+					</div>
+				</li>
+
+				<li style="background-image: url('./img/demo3.jpg');">
+					<div class="inner">
+						
+					</div>
+
+				</li>
+
+				<li style="background-image: url('./img/demo4.jpg');">
+					<div class="inner">
+						
+					</div>
+				</li>
+			</ul>
+</div>
+
+<p>  </p>
+<p>  </p>
+<p>  </p>
+<p> <center>    <img src="./img/logo.png"></center></p>
+
+
+<div class="container-fluid">
+	<div class="row-fluid">
+		<div class="span4">
+		</div>
+		<div class="span4">
+			<form class="form-horizontal">
+   <div class="control-group">
+   <br>
+   <br>
+    <label class="control-label" for="inputPassword">姓名:</label>
+    <div class="controls">
+   <label class="control-label" for="inputEmail" style="float:left" >程扬帆&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="inputPassword">班级:</label>
+    <div class="controls">
+   <label class="control-label" for="inputEmail">计算机合1001&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="inputPassword">学号:</label>
+    <div class="controls">
+   <label class="control-label" for="inputEmail">4202100104&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
+<br>
+<br>
+<br>
+   <button type="submit" class="btn" onclick="enter()">进入登录界面</button>
+    </div>
+  </div>
+  </div>
+</form>
+	</div>
+</div>
+
+
+
+<script src="./js/unslider.js"></script>
+<script>
+function enter()
+{
+  window.open("login.jsp");
+}
+			if(window.chrome) {
+				$('.banner li').css('background-size', '100% 100%');
+			}
+
+			$('.banner').unslider({
+				speed: 30,               //  The speed to animate each slide (in milliseconds)
+				delay: 3000,              //  The delay between slide animations (in milliseconds)
+				complete: function() {},  //  A function that gets called after every slide animation
+				keys: true,               //  Enable keyboard (left, right) arrow shortcuts
+				dots: true,               //  Display dot navigation
+				fluid: false           
+			});
+
+
+			//  Find any element starting with a # in the URL
+			//  And listen to any click events it fires
+			$('a[href^="#"]').click(function() {
+				//  Find the target element
+				var target = $($(this).attr('href'));
+
+				//  And get its position
+				var pos = target.offset(); // fallback to scrolling to top || {left: 0, top: 0};
+
+				//  jQuery will return false if there's no element
+				//  and your code will throw errors if it tries to do .offset().left;
+				if(pos) {
+					//  Scroll the page
+					$('html, body').animate({
+						scrollTop: pos.top,
+						scrollLeft: pos.left
+					}, 1000);
+				}
+
+				//  Don't let them visit the url, we'll scroll you there
+				return false;
+			});
+
+			
+		</script>
+
+
+<footer class="footer">
+ <p>数据可视化系统</p>
+
+
+ </footer>
+
+</body>
+
+
+
+</html>
+

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>旋转的地球</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <style type="text/css">
+            *{margin:0px;padding: 0px;}
+            #content{width: 300px; height: 300px; border-radius: 150px;overflow: hidden; margin: 80px auto 20px;
+                     box-shadow: -1px 1px 1px #000000;  position:relative\0; *position:relative;}
+            #mask{width: 300px\0; height: 300px\0; *width: 300px; *height: 300px;  z-index:999;
+                  position: absolute\0; top: 0px\0; left: 0px\0;
+                  background: url(http://images.cnblogs.com/cnblogs_com/kuikui/354173/r_round.png) center no-repeat\0;
+                  *position: absolute; *top: 0px; *left: 0px; 
+                  *background: url(http://images.cnblogs.com/cnblogs_com/kuikui/354173/r_round.png) center no-repeat; 
+            }
+            #box{width: 1200px; height: 300px; margin-left: -300px; margin-top: 0px; 
+                 margin-left: 0px\0;position: absolute\0; top: 0px\0; left: -300px\0;
+                 *margin-left: 0px; *position: absolute; *top: 0px; *left: -300px;
+
+            }
+            .options{text-align: center;}
+            .options input{padding:3px 15px; cursor: pointer;}
+        </style>
+    </head>
+    <body>
+        <div id="content">
+            <div id="mask"></div>
+            <div id="box">
+                <img width="1200" height="300" alt="" src="http://images.cnblogs.com/cnblogs_com/kuikui/354173/r_mearth.jpg" />
+            </div>
+        </div>
+        <div class="options">
+　　　　　　　　<input id="mleft" style="margin-right: 40px;" type="button" value="向左" />
+　　　　　　　　<input id="mright" type="button" value="向右" />
+　　　　</div>
+        <script type="text/javascript">
+            function $(id){return document.getElementById(id);}
+            function isIE(){
+                if(navigator.appVersion.match(/MSIE/gi)=="MSIE"){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+            function isIE6_8(){
+                if(!(navigator.appVersion.match(/9./i)=="9.")&&isIE()){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+           
+
+            var content = $("content");
+            var oBox = $("box");
+            var mleft = $("mleft");
+            var mright = $("mright");
+            var step = -300;
+            var bstep = true;
+            var auto;
+            function moving(){
+                auto = setInterval(function(){
+                    if(bstep){
+                        step--;
+                    }
+                    else{
+                        step++;
+                    }
+                    if(step<-900){
+                        step=-300;
+                    }
+                    if(step>-300){
+                        step=-900;
+                    }
+                    
+                    if(!isIE6_8()){
+                        oBox.style.marginLeft = step+"px";
+                    }
+                    else{
+                        oBox.style.left=step+"px";
+                    }
+                },15);
+            }
+               
+            moving();
+            
+            content.onmousemove=function(event){
+                if(isIE6_8()){
+                    event = event || window.event;
+                    var x = event.offsetX;
+                    var y = event.offsetY;
+                    var tmp =Math.abs(x-150)*Math.abs(x-150)+Math.abs(y-150)*Math.abs(y-150);
+                    if(tmp<150*150){
+                        clearInterval(auto);
+                    }
+                }
+                else{
+                    clearInterval(auto);
+                }
+            }
+            
+            content.onmouseout=function(event){
+                moving();
+            }
+            
+            mleft.onclick=function(){
+                bstep = true;
+                content.style.boxShadow="-1px 1px 1px #000000";
+                content.style.box_Shadow="-1px 1px 1px #000000";
+            }
+            mright.onclick = function(){
+                bstep = false;
+                content.style.boxShadow="1px 1px 1px #000000";
+                content.style.box_Shadow="1px 1px 1px #000000";
+            }
+        </script>
+    </body>
+</html>

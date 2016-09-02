@@ -1,0 +1,4 @@
+#Sat May 17 17:24:17 CST 2014
+eclipse.preferences.version=1
+validator.Checked=WebRoot/WEB-INF/manager(1).jsp,WebRoot/manager.jsp,WebRoot/WEB-INF/manager.jsp
+validator.Unchecked=

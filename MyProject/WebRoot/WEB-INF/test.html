@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+
+.node {
+  cursor: pointer;
+}
+
+.node:hover {
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.node--root {
+  stroke: #777;
+  stroke-width: 2px;
+}
+
+.node--leaf {
+  fill: white;
+}
+
+.label {
+  font: 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-anchor: middle;
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+}
+
+.label,
+.node--root,
+.node--leaf {
+  pointer-events: none;
+}
+
+</style>
+
+</head>
+<body onload="myFloat();">
+<!-- <script src="http://d3js.org/d3.v3.min.js"></script> -->
+<script src="DataDrivenSystem/js/d3.v3.min.js"></script> 
+<script type="text/javascript">
+var step = 1; // 移动的像素
+var y = -1; // 垂直移动的方向，-1表示向上，1表示向下
+var x = 1; // 水平移动的方向，-1表示向左，1表示向右
+function myFloat()
+{
+//**************
+//如果取id默认是获取很多个node里面的第一个，所以此处需要修改
+var img = document.getElementById("node");
+//获取上边距
+var top = img.style.top.replace("px", "");
+var left = img.style.left.replace("px", "");
+// 上下移动
+if(top <= 0)
+{
+y = 1;
+}
+if(top >= document.body.clientHeight)
+{
+y = -1;
+}
+top = (top*1) + (step * y);
+img.style.top = top + "px";
+// 左右移动
+if(left <= 0)
+{
+x = 1;
+}
+if(left >= (document.body.clientWidth - img.clientWidth))
+{
+x = -1;
+}
+left = (left*1) + (step * x);
+img.style.left = left + "px";
+setTimeout("myFloat()", 20);
+}
+</script>
+<script>
+
+var margin = 5,
+    outerDiameter = 960,
+    innerDiameter = outerDiameter - margin - margin;
+
+var x = d3.scale.linear() //创建一个线性定量变换。
+    .range([0, innerDiameter]);//get或set值域。
+
+var y = d3.scale.linear()
+    .range([0, innerDiameter]);
+
+var color = d3.scale.linear()
+    .domain([-1, 5])//get或set定义域
+    .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])//在两个HSL颜色间插值
+    .interpolate(d3.interpolateHcl);//get或set变换的插值函数，如将默认的线性插值函数替换成取整的线性插值
+               //在两个HCL颜色间插值
+var pack = d3.layout.pack()  //用递归的圆环表现一个多层级布局.
+    .padding(2) //指定相邻结点之点的间距(近似值).
+    .size([innerDiameter, innerDiameter])  //设置整个布局画布的 宽 and 高.
+    .value(function(d) { return d.size; }) //获取或设置一个函数, 用来计算圆环的大小(近似值).
+
+var svg = d3.select("body").append("svg")
+    .attr("width", outerDiameter)
+    .attr("height", outerDiameter)
+  .append("g")
+    .attr("transform", "translate(" + margin+ "," + margin + ")");
+   //.attr("transform", "translate(" + outerDiameter  + "," + outerDiameter  + ")");
+   
+
+d3.json("/MyProject/servlet/getJsonTest", function(error, root) {
+
+//if (error) return console.error(error);
+//d3.json("SchoolList.json", function(json) {
+//alert("scs");
+     //alert(json); 
+ //console.log(json);
+  var focus = root,
+      nodes =pack.nodes(root);  //计算并返回指定结点的子结点信息.
+    
+  svg.append("g").selectAll("circle")
+      .data(nodes)
+    .enter().append("circle")  //新增一个节点圆环
+      .attr("id",function(d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root";})
+     // .attr("id",function(d) { return d.university ? d.department ? d.,major ?  "node" : "node node--leaf" : "node node--root";})
+      .attr("class", function(d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
+      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+      .attr("r", function(d) { return d.r; })
+      .style("fill", function(d) { return d.children ? color(d.depth) : null; })
+      .on("click", function(d) {
+      		return zoom(focus == d ? root : d); 
+      })
+      .on("dblclick",function(d) {//这边跳转时附带参数，id和type，传给show.jsp
+      
+      		top.location = "/MyProject/show.jsp?type=" + d.type + "&id=" + d.id;
+      });
+  svg.append("g").selectAll("text")//添加文字信息
+      .data(nodes)
+    .enter().append("text")
+      .attr("class", "label")
+      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+      .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
+      .style("display", function(d) { return d.parent === root ? null : "none"; })
+      .text(function(d) { return d.name; });
+ 
+  d3.select(window)
+      .on("click", function() { zoom(root); });
+  d3.select("body")
+      .style("background", color(-1))
+      
+  function zoom(d, i) { //缩放行为函数
+    var focus0 = focus;
+    focus = d;
+
+    var k = innerDiameter / d.r / 2;
+    x.domain([d.x - d.r, d.x + d.r]);
+    y.domain([d.y - d.r, d.y + d.r]);
+    d3.event.stopPropagation();//停止事件的传播，阻止它被分派到其他 Document 节点
+
+    var transition = d3.selectAll("text,circle").transition()//启动一个过渡效果（返回 Transition 对象），可以理解为动画。
+        .duration(d3.event.altKey ? 7500 : 750)//指定每个元素过渡的持续时间（单位：毫秒ms）d3.event.altKey:检测事件发生时Alt键是否被按住了。
+        .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+
+    transition.filter("circle")//通过数据筛选出当前元素中的部分元素进行过渡,此处是选出圆圈进行过渡
+        .attr("r", function(d) { return k * d.r; });
+
+    transition.filter("text")  //此处是选文字进行过渡
+      .filter(function(d) { return d.parent === focus || d.parent === focus0; })
+        .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; }) //transition.style - 平滑过渡到新的style属性值。
+        .each("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
+        .each("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
+  }    //遍历每个元素执行操作。不指定触发类型时，立即执行操作。当指定触发类型为'start'或'end'时,会在过渡开始或结束时执行操作。
+});
+
+d3.select(self.frameElement).style("height", outerDiameter + "px");
+
+
+</script>
+
+</body>
+</html>

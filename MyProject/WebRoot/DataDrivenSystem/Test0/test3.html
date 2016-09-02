@@ -1,0 +1,172 @@
+<html><head><meta charset="utf-8">
+<title>World Tour</title>
+<link rel="icon" href="/favicon.png">
+<style>
+
+@import url("/style.css?20120730");
+
+header,
+footer {
+  color: #555;
+}
+
+a.gist {
+  color: #000;
+}
+
+</style>
+
+</head><body><header>
+  <a href="/mbostock">mbostock</a>¡¯s block
+  <a class="gist" title="View gist #4183330 on GitHub" href="https://gist.github.com/mbostock/4183330">#4183330</a>
+  <span class="date">December 1, 2012</span>
+</header>
+
+<h1>World Tour</h1>
+
+
+<iframe src="/mbostock/raw/4183330/6edc765e7c492aef9359c097fd6a651c601b74e8/" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p></p><aside><a style="position:relative;top:6px;" href="/mbostock/raw/4183330/" target="_blank">Open in a new window.</a></aside>
+
+
+<div class="gist-readme"><p>See <a href="http://news.ycombinator.com/item?id=4858817">discussion on Hacker News</a>. Built with <a href="http://d3js.org">D3</a> and <a href="https://github.com/mbostock/topojson">TopoJSON</a>.</p></div>
+
+<div class="gist-sources"><div class="gist-source"><h2>index.html<a name="index.html" href="#index.html">#</a></h2><pre><code class="html xml"><span class="doctype">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;<span class="title">meta</span> <span class="attribute">charset</span>=<span class="value">"utf-8"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">style</span>&gt;</span><span class="css">
+
+<span class="tag">h1</span> <span class="rules">{
+  <span class="rule"><span class="attribute">position</span>:<span class="value"> absolute</span>;</span>
+  <span class="rule"><span class="attribute">top</span>:<span class="value"> <span class="number">280</span>px</span>;</span>
+  <span class="rule"><span class="attribute">font-family</span>:<span class="value"> <span class="string">"Helvetica Neue"</span>, Helvetica, Arial, sans-serif</span>;</span>
+  <span class="rule"><span class="attribute">font-size</span>:<span class="value"> <span class="number">18</span>px</span>;</span>
+  <span class="rule"><span class="attribute">text-align</span>:<span class="value"> center</span>;</span>
+  <span class="rule"><span class="attribute">width</span>:<span class="value"> <span class="number">960</span>px</span>;</span>
+<span class="rule">}</span></span>
+
+</span><span class="tag">&lt;/<span class="title">style</span>&gt;</span>
+<span class="tag">&lt;<span class="title">h1</span>&gt;</span><span class="tag">&lt;/<span class="title">h1</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://d3js.org/d3.v3.min.js"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://d3js.org/queue.v1.min.js"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://d3js.org/topojson.v1.min.js"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="javascript">
+
+<span class="keyword">var</span> width = <span class="number">960</span>,
+    height = <span class="number">500</span>;
+
+<span class="keyword">var</span> projection = d3.geo.orthographic()
+    .scale(<span class="number">248</span>)
+    .clipAngle(<span class="number">90</span>);
+
+<span class="keyword">var</span> canvas = d3.select(<span class="string">"body"</span>).append(<span class="string">"canvas"</span>)
+    .attr(<span class="string">"width"</span>, width)
+    .attr(<span class="string">"height"</span>, height);
+
+<span class="keyword">var</span> c = canvas.node().getContext(<span class="string">"2d"</span>);
+
+<span class="keyword">var</span> path = d3.geo.path()
+    .projection(projection)
+    .context(c);
+
+<span class="keyword">var</span> title = d3.select(<span class="string">"h1"</span>);
+
+queue()
+    .defer(d3.json, <span class="string">"/d/4090846/world-110m.json"</span>)
+    .defer(d3.tsv, <span class="string">"/d/4090846/world-country-names.tsv"</span>)
+    .await(ready);
+
+<span class="function"><span class="keyword">function</span> <span class="title">ready</span><span class="params">(error, world, names)</span> {</span>
+  <span class="keyword">var</span> globe = {type: <span class="string">"Sphere"</span>},
+      land = topojson.feature(world, world.objects.land),
+      countries = topojson.feature(world, world.objects.countries).features,
+      borders = topojson.mesh(world, world.objects.countries, <span class="function"><span class="keyword">function</span><span class="params">(a, b)</span> {</span> <span class="keyword">return</span> a !== b; }),
+      i = -<span class="number">1</span>,
+      n = countries.length;
+
+  countries = countries.filter(<span class="function"><span class="keyword">function</span><span class="params">(d)</span> {</span>
+    <span class="keyword">return</span> names.some(<span class="function"><span class="keyword">function</span><span class="params">(n)</span> {</span>
+      <span class="keyword">if</span> (d.id == n.id) <span class="keyword">return</span> d.name = n.name;
+    });
+  }).sort(<span class="function"><span class="keyword">function</span><span class="params">(a, b)</span> {</span>
+    <span class="keyword">return</span> a.name.localeCompare(b.name);
+  });
+
+  (<span class="function"><span class="keyword">function</span> <span class="title">transition</span><span class="params">()</span> {</span>
+    d3.transition()
+        .duration(<span class="number">1250</span>)
+        .each(<span class="string">"start"</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
+          title.text(countries[i = (i + <span class="number">1</span>) % n].name);
+        })
+        .tween(<span class="string">"rotate"</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
+          <span class="keyword">var</span> p = d3.geo.centroid(countries[i]),
+              r = d3.interpolate(projection.rotate(), [-p[<span class="number">0</span>], -p[<span class="number">1</span>]]);
+          <span class="keyword">return</span> <span class="function"><span class="keyword">function</span><span class="params">(t)</span> {</span>
+            projection.rotate(r(t));
+            c.clearRect(<span class="number">0</span>, <span class="number">0</span>, width, height);
+            c.fillStyle = <span class="string">"#bbb"</span>, c.beginPath(), path(land), c.fill();
+            c.fillStyle = <span class="string">"#f00"</span>, c.beginPath(), path(countries[i]), c.fill();
+            c.strokeStyle = <span class="string">"#fff"</span>, c.lineWidth = .<span class="number">5</span>, c.beginPath(), path(borders), c.stroke();
+            c.strokeStyle = <span class="string">"#000"</span>, c.lineWidth = <span class="number">2</span>, c.beginPath(), path(globe), c.stroke();
+          };
+        })
+      .transition()
+        .each(<span class="string">"end"</span>, transition);
+  })();
+}
+
+</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+</code></pre></div></div>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="/highlight.min.js?20120730"></script>
+<script>
+
+var gist = {"history":[{"version":"6edc765e7c492aef9359c097fd6a651c601b74e8"}],"files":{"README.md":{"language":"Markdown","type":"text/plain","filename":"README.md","size":164,"sha":"09699ff83f1b7ca6c18058297174c949d1060bf4"},"index.html":{"language":"HTML","type":"text/html","filename":"index.html","size":2344,"sha":"ddca91f4e920b6df49f04f57a27d9f3b8ec3f38a"},"thumbnail.png":{"language":null,"type":"image/png","filename":"thumbnail.png","size":16020,"sha":"2e0a1e65302c1b6bf1cbad4ebe5bef212b19f0c1"}},"created_at":"2012-12-01T17:21:28.000Z","updated_at":"2013-11-11T20:59:07.000Z","description":"World Tour","user":{"login":"mbostock"},"id":"4183330"};
+
+var files = d3.values(gist.files)
+    .sort(function(a, b) { return (b.filename === "index.html") - (a.filename === "index.html") || a.filename.localeCompare(b.filename); });
+
+var readme = d3.selectAll(".gist-readme")
+    .data(files.filter(function(d) { return /^readme\b/i.test(d.filename) && d.language === "Markdown"; }))
+    .each(function(d) {
+      var readme = d3.select(this);
+      d3.text("/mbostock/raw/4183330/6edc765e7c492aef9359c097fd6a651c601b74e8/" + d.filename, function(error, content) {
+        readme.html(new Showdown.converter().makeHtml(content));
+        readme.selectAll("code").each(function() { hljs.highlightBlock(this); });
+      });
+    });
+
+var source = d3.select(".gist-sources").selectAll(".gist-source")
+    .data(files.filter(function(d) { return !/^readme\b/i.test(d.filename) && d.size < 50000 && text(d.type); }))
+  .enter().append("div")
+    .attr("class", "gist-source");
+
+source.append("h2")
+    .text(function(d) { return d.filename; })
+  .append("a")
+    .attr("name", function(d) { return d.filename; })
+    .attr("href", function(d) { return "#" + d.filename; })
+    .text("#");
+
+source.append("pre").append("code")
+    .attr("class", function(d) { return d.language && (d.language === "JSON" ? "javascript" : d.language.toLowerCase()); })
+    .each(function(d) {
+      var code = d3.select(this);
+      d3.text("/mbostock/raw/4183330/6edc765e7c492aef9359c097fd6a651c601b74e8/" + (d.filename === "index.html" ? "" : d.filename), function(error, content) {
+        code.text(content);
+        hljs.highlightBlock(code.node());
+      });
+    });
+
+function text(type) {
+  return /(^text\/)|(^application\/(javascript|json)$)|(^image\/svg$)|(\+xml$)/.test(type);
+}
+
+</script>
+
+<footer>
+  <a href="/mbostock">mbostock</a>¡¯s block
+  <a class="gist" title="View gist #4183330 on GitHub" href="https://gist.github.com/mbostock/4183330">#4183330</a>
+  <span class="date">December 1, 2012</span>
+</footer>
+</body></html>

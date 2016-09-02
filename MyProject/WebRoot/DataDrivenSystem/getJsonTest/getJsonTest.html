@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>getJsonTest</title>
+</head>
+<body onload="myFloat();">
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+function myFloat(){
+	d3.json("/MyProject/servlet/getJsonTest", function(error, root) {
+		console.log(root)
+	})
+}
+</script>
+
+</body>
+
+</html>

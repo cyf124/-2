@@ -1,0 +1,37 @@
+我的毕业设计的项目说明
+1、数据集层级关系
+	南京的大学学府->具体各个大学学府->大学学府的各个专业系别->各个系别下的专业名称
+2、后台数据的添加功能
+	增加一个数据库后台方便使用者去添加或者是删除数据以方便直观的看到南京的大学院校关于学习专业的相关信息
+	
+	
+增加各个大学级别的圈的浮动效果，数据库读取这一块没有完善，暂时还不能做到浮动的效果
+另外层级因为开始考虑的时候忽略了，若后台添加页面不分层级的话，则需要每次都要加院校，显得很麻烦，所以数据库的表结构需要一定的修改。
+	
+SchoolList.json    ------目前为静态的数据，后期会修改为动态获取数据库中的数据
+index.html         ------此页面是数据可视化的页面，仅做展示
+addSchool.html     ------此页面是用作管理员去增加院校以及院校系别及专业的相关信息
+editSchool.html    ------此页面是用作编辑或是删除现有的院校的相关信息
+
+com/bin/School.java					------此类是Model类，get和set方法方便数据库操作的读取和调用
+com/dao/SchoolDao.java				------接口，定义实现类需要执行的方法
+									提供了2个接口方法，1个为增加学院的方法，1个为getSchoolDetail()，另一个为addSchool()
+com/factory/DAOFactory.java			------工厂类
+com/impl/SchoolDaoimpl.java			------SchoolDao.java的实现类
+									具体实现接口定义的方法，sql语句都写在这两个方法里面。
+com/jdbc/DataBaseConnection.java	------连接数据库的类
+com/servlet/SchoolServlet.java		------页面初始化需要调用的类
+									定义一个method如果method为AddSchool，则调用AddSchool这个方法
+									如果method为GetSchool，则调用GetSchool这个方法
+											
+com/tool/CharacterEncodingFilter.java	--字符集的过滤器
+
+
+http://localhost:8080/MyProject/DataDrivenSystem/school/index.html
+
+
+
+
+
+后期需要应对这些数据库的操作写一个后台的操作页面，进行增删改查操作。
+疑问：如果做后台的操作界面是否需要做一个登录的页面，并且是否需要做一个拦截器以防他人通过输入地址能够修改数据库的信息。
